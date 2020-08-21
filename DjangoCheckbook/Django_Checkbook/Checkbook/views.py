@@ -4,9 +4,12 @@ from .forms import AccountForm, TransactionForm
 
 
 def home(request):
-    form: TransactionForm(data=request.POST or None)
+    form = TransactionForm(data=request.POST or None)
+    if request.method == 'POST':
+        pk = request.POST['account']
+        return balance(request, pk)
     content = {'form': form}
-    return render(request, 'checkbook/index.html',content)
+    return render(request, 'checkbook/index.html', content)
 
 
 def create_account(request):
@@ -24,7 +27,7 @@ def balance(request, pk):
             table_contents.update({t: current_total})
         else:
             current_total -= t.amount
-            total_contents.update({t: current_total})
+            table_contents.update({t: current_total})
     content = {'account': account, 'table_contents': table_contents, 'balance': current_total}
     return render(request, 'checkbook/BalanceSheet.html', content)
 
